@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Configure Nginx custom 404 page containing Ceci n'est pas une page
+apt-get update -y
+apt-get install -y nginx
+printf 'Holberton School for the win!\n' > /var/www/html/index.html
+printf "Ceci n'est pas une page\n" > /var/www/html/404.html
+if ! grep -q "error_page 404 /404.html;" /etc/nginx/sites-enabled/default; then
+    sed -i '/server_name _;/a \
+\terror_page 404 /404.html;\
+\tlocation = /404.html {\
+\t\tinternal;\
+\t}' /etc/nginx/sites-enabled/default
+fi
+if ! grep -q "rewrite \^/redirect_me" /etc/nginx/sites-enabled/default; then
+    sed -i '/server_name _;/a \
+\trewrite ^/redirect_me/?$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-enabled/default
+fi
+service nginx restart

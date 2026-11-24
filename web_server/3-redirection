@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Install Nginx and configure a 301 redirect for /redirect_me
+apt-get update -y
+apt-get install -y nginx
+printf 'Holberton School for the win!\n' > /var/www/html/index.html
+if ! grep -q "rewrite \^/redirect_me" /etc/nginx/sites-enabled/default; then
+    sed -i '/server_name _;/a \
+\trewrite ^/redirect_me/?$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-enabled/default
+fi
+service nginx restart
