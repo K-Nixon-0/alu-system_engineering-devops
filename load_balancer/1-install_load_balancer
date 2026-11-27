@@ -18,5 +18,12 @@ backend web-servers
     server 7311-web-02 35.178.19.144:80 check
 CONF
 fi
+if ! grep -q "h1-case-adjust" /etc/haproxy/haproxy.cfg; then
+    sudo sed -i '/^global/a\    h1-case-adjust x-served-by X-Served-By' /etc/haproxy/haproxy.cfg
+    sudo sed -i '/^frontend http-in/a\    option h1-case-adjust-bogus-client' /etc/haproxy/haproxy.cfg
+fi
 sudo systemctl enable haproxy 2>/dev/null
 sudo service haproxy restart
+sleep 2
+grep "server " /etc/haproxy/haproxy.cfg
+for i in 1 2 3 4; do curl -sI http://localhost | grep -i x-served-by; done
